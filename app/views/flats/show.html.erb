@@ -1,0 +1,44 @@
+<% content_for :title, "Flat #{@flat.name}" %>
+
+<p>
+  <strong>Name:</strong>
+  <%= @flat.name %>
+</p>
+
+<p>
+  <strong>Address:</strong>
+  <%= @flat.address %>
+</p>
+
+
+<div id="map"></div>
+<script>
+  function initMap() {
+    var flat = <%= raw @flat_coordinates.to_json %>;
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 14,
+      center: flat
+    });
+    var marker = new google.maps.Marker({
+      position: flat,
+      map: map
+    });
+  }
+</script>
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_BROWSER_KEY'] %>&callback=initMap">
+</script>
+
+<%= link_to 'Edit', edit_flat_path(@flat) %> |
+<%= link_to 'Back', flats_path %>
+
+<% content_for :after_js do %>
+<!-- content_for :NAME the name :name should be the same as in yield of application.html -->
+  <script>
+    $(document).ready(function() {
+      // the raw makes that the injected result is not converted to string
+      var coordinates = <%= raw @flat_coordinates.to_json %>;
+      alert('Welcome to <%= @flat.name %>, it is located here '+ coordinates.lat + ', ' + coordinates.lng + '!!!');
+    });
+  </script>
+<% end %>
